@@ -1,34 +1,37 @@
 services:
+  # API (Node/Express)
   - type: web
     name: nexa-crm-api
     env: node
     plan: free
-    buildCommand: "cd server && npm install"
-    startCommand: "cd server && npm run start"
     autoDeploy: true
+    buildCommand: "npm --prefix server install"
+    startCommand: "node server/src/index.js"
     envVars:
       - key: PORT
         value: 4000
       - key: JWT_SECRET
         generateValue: true
       - key: CLIENT_ORIGIN
+        # OJO: cambia este valor cuando conozcas la URL del front en Render
         value: https://nexa-crm-web.onrender.com
-      # agrega tu cadena de conexión
       - key: MONGODB_URI
+        # pon aquí tu cadena de Atlas o de la DB de Render (no se puede autogenerar)
         sync: false
 
-  # Frontend estático: SIN 'plan'
+  # Frontend (Static Site con Vite)
   - type: web
     name: nexa-crm-web
     env: static
     autoDeploy: true
-    buildCommand: "cd client && npm install && npm run build"
+    buildCommand: "npm --prefix client install && npm --prefix client run build"
     staticPublishPath: "client/dist"
-    envVars:
-      - key: VITE_API_BASE_URL
-        value: https://nexa-crm-api.onrender.com
-    # recomendado para SPA (deep links /refresh):
+    # SPA rewrite para refrescos y rutas
     routes:
       - type: rewrite
         source: /.*
         destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        # apunta a la URL pública de la API de arriba
+        value: https://nexa-crm-api.onrender.com
