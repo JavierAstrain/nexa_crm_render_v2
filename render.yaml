@@ -13,11 +13,16 @@ services:
         generateValue: true
       - key: CLIENT_ORIGIN
         value: https://nexa-crm-web.onrender.com
-      # Reemplaza por tu cluster/DB Atlas
+      # Reemplaza con tu cadena de conexión de Atlas/Render
       - key: MONGODB_URI
         sync: false
-  - type: static
+
+  # ⬇️ Cambiado: antes era `type: static`, ahora es `type: web` + `env: static`
+  - type: web
     name: nexa-crm-web
+    env: static
+    plan: free
+    autoDeploy: true
     buildCommand: "cd client && npm install && npm run build"
     staticPublishPath: "client/dist"
     envVars:
