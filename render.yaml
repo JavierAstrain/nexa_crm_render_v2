@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: nexa-crm-api
+    env: node
+    plan: free
+    buildCommand: "cd server && npm install"
+    startCommand: "cd server && npm run start"
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_ORIGIN
+        value: https://nexa-crm-web.onrender.com
+      # Reemplaza por tu cluster/DB Atlas
+      - key: MONGODB_URI
+        sync: false
+  - type: static
+    name: nexa-crm-web
+    buildCommand: "cd client && npm install && npm run build"
+    staticPublishPath: "client/dist"
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://nexa-crm-api.onrender.com
